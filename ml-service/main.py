@@ -14,6 +14,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import tensorflow as tf
 
+from huggingface_hub import hf_hub_download
+
+HF_REPO_ID = "ahmad8989rana/urban-eye-models"
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
