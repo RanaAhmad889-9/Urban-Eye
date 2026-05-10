@@ -10,11 +10,11 @@ env/
 # Push them to Hugging Face Hub or upload manually to HF Space
 models/*.pt
 models/*.pth
-models/*.h5
+# models/*.h5
 models/*.pkl
 models/*.bin
 models/*.onnx
 models/*.tflite
-models/*.keras
+# models/*.keras
 # Logs
 *.log
