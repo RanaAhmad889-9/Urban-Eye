@@ -1,0 +1,10 @@
+import { Router } from 'express';
+import { getAllUsers, getAllImages, deleteImage, deleteUser } from '../controllers/admin.controller';
+import { protect, adminOnly } from '../middleware/auth.middleware';
+const router = Router();
+router.use(protect, adminOnly);
+router.get('/users', getAllUsers);
+router.get('/images', getAllImages);
+router.delete('/images/:id', deleteImage);
+router.delete('/users/:id', deleteUser);
+export default router;

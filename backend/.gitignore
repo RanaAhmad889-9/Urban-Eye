@@ -1,0 +1,31 @@
+# dependencies
+/node_modules
+
+# build output
+/dist
+
+# environment variables
+.env
+
+# logs
+logs
+*.log
+npm-debug.log*
+
+# runtime data
+pids
+*.pid
+*.seed
+
+# typescript
+*.tsbuildinfo
+
+# ts-node-dev cache
+.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# uploads (if using multer)
+uploads/
