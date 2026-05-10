@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Keep models dir but exclude large model files
+# Push them to Hugging Face Hub or upload manually to HF Space
+models/*.pt
+models/*.pth
+models/*.h5
+models/*.pkl
+models/*.bin
+models/*.onnx
+models/*.tflite
+models/*.keras
+# Logs
+*.log
