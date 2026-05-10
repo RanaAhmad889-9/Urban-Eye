@@ -39,15 +39,26 @@ def load_models():
         classifier_model = tf.keras.models.load_model(classifier_path)
         unet_model = tf.keras.models.load_model(unet_path)
 
+        logger.info(f"✅ Classifier input shape: {classifier_model.input_shape}")
+        logger.info(f"✅ UNet input shape: {unet_model.input_shape}")
         logger.info("✅ Models loaded successfully")
 
     except Exception as e:
         logger.warning(f"⚠️ Could not load models: {e}")
 
 
-def preprocess(image: Image.Image, size=(256, 256)) -> np.ndarray:
-    img = image.convert("RGB").resize(size, Image.LANCZOS)
-    return np.expand_dims(np.array(img, dtype=np.float32) / 255.0, 0)  # (1,H,W,3)
+def preprocess_classifier(image: Image.Image) -> np.ndarray:
+    img = image.convert("RGB").resize((224, 224), Image.LANCZOS)
+    arr = np.array(img, dtype=np.float32) / 255.0
+    return np.expand_dims(arr, 0)
+
+
+def preprocess_unet(image: Image.Image) -> np.ndarray:
+    img = image.convert("RGB").resize((256, 256), Image.LANCZOS)
+    arr = np.array(img, dtype=np.float32) / 255.0
+    return np.expand_dims(arr, 0)
+
+
 
 
 def run_classifier(arr: np.ndarray) -> bool:
@@ -131,11 +142,21 @@ async def analyze(file: UploadFile = File(...)):
         raise HTTPException(400, "Invalid file type")
     try:
         original = Image.open(io.BytesIO(await file.read()))
-        arr = preprocess(original)
-        is_sat = run_classifier(arr)
+        classifier_arr = preprocess_classifier(original)
+        logger.info(f"Classifier input shape: {classifier_arr.shape}")
+
+        is_sat = run_classifier(classifier_arr)
+        
         if not is_sat:
-            return {"isSatellite": False, "buildingCount": 0, "highlightedImage": None}
-        mask = run_unet(arr)
+            return {
+            "isSatellite": False,
+            "buildingCount": 0,
+            "highlightedImage": None
+            }
+        
+        unet_arr = preprocess_unet(original)
+        logger.info(f"UNet input shape: {unet_arr.shape}")
+        mask = run_unet(unet_arr)
         count = count_buildings(mask)
         highlighted = build_overlay(original, mask)
         return {"isSatellite": True, "buildingCount": count, "highlightedImage": highlighted}
