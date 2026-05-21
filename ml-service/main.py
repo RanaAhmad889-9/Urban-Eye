@@ -32,19 +32,43 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 def load_models():
     global classifier_model, unet_model
 
+    os.makedirs(MODELS_DIR, exist_ok=True)
+
     try:
-        classifier_path = os.path.join(MODELS_DIR, "classifier.h5")
-        unet_path = os.path.join(MODELS_DIR, "unet.keras")
+        logger.info("⬇️  Downloading models from HF Hub...")
 
-        classifier_model = tf.keras.models.load_model(classifier_path)
-        unet_model = tf.keras.models.load_model(unet_path)
+        token = os.getenv("HF_TOKEN")  # set this in Space secrets if repo is private
 
-        logger.info(f"✅ Classifier input shape: {classifier_model.input_shape}")
-        logger.info(f"✅ UNet input shape: {unet_model.input_shape}")
+        classifier_path = hf_hub_download(
+            repo_id=HF_REPO_ID,
+            filename="classifier.h5",
+            local_dir=MODELS_DIR,
+            token=token
+        )
+        unet_path = hf_hub_download(
+            repo_id=HF_REPO_ID,
+            filename="unet.keras",
+            local_dir=MODELS_DIR,
+            token=token
+        )
+
+        classifier_model = tf.keras.models.load_model(
+            classifier_path,
+            compile=False,
+            safe_mode=False
+        )
+        unet_model = tf.keras.models.load_model(
+            unet_path,
+            compile=False,
+            safe_mode=False
+        )
+
+        logger.info(f"✅ Classifier input: {classifier_model.input_shape}")
+        logger.info(f"✅ UNet input: {unet_model.input_shape}")
         logger.info("✅ Models loaded successfully")
 
     except Exception as e:
-        logger.warning(f"⚠️ Could not load models: {e}")
+        logger.warning(f"⚠️  Could not load models: {e}")
 
 
 def preprocess_classifier(image: Image.Image) -> np.ndarray:
