@@ -4,6 +4,7 @@ import User from '../models/user.model';
 
 export interface AuthRequest extends Request {
   user?: { id: string; role: string };
+  file?: Express.Multer.File;
 }
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction) => {
